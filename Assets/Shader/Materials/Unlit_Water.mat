@@ -4,15 +4,16 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: Unlit_Water
   m_Shader: {fileID: 4800000, guid: b55d62bb67a9a804fb43eb0d4addf84b, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 3000
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -27,4 +28,4 @@ Material:
     - _Metallic: 0
     - _Stencil: 10
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 0.16862746}
+    - _Color: {r: 1, g: 1, b: 1, a: 0.3372549}

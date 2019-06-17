@@ -10,6 +10,11 @@ public class WaterControl : MonoBehaviour {
     private float maxAngle_diff = -1f;
     private Quaternion maxQuat_diff = Quaternion.identity;
 
+    private void Start()
+    {
+        Camera.main.depthTextureMode |= DepthTextureMode.Depth;
+    }
+
     private void Update()
     {
         Quaternion currentRot = transform.rotation;

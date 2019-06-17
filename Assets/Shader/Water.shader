@@ -25,11 +25,15 @@
 
 		struct Input {
 			float2 uv_MainTex;
+			float4 screenPos;
+			float3 worldPos;
+			float3 viewDir;
 		};
 
 		half _Glossiness;
 		half _Metallic;
 		fixed4 _Color;
+		sampler2D _CameraDepthTexture;
 
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
 		// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -41,11 +45,15 @@
 		void surf (Input IN, inout SurfaceOutputStandard o) {
 			// Albedo comes from a texture tinted by color
 			fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
-			o.Albedo = c.rgb;
+			float2 screenPos = IN.screenPos.xy / IN.screenPos.w;
+			fixed depth = Linear01Depth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screenPos));
+			fixed myDepth = length(IN.worldPos - _WorldSpaceCameraPos) * _ProjectionParams.w;
+			fixed diff = pow(1 - abs(depth - myDepth), 3000);
+			o.Albedo = diff.rrr ;
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;
 			o.Smoothness = _Glossiness;
-			o.Alpha = c.a;
+			o.Alpha = 1;
 		}
 		ENDCG
 	}
