@@ -1,61 +1,87 @@
-﻿Shader "Custom/Water" {
-	Properties {
-		_Color ("Color", Color) = (1,1,1,1)
-		_MainTex ("Albedo (RGB)", 2D) = "white" {}
-		_Glossiness ("Smoothness", Range(0,1)) = 0.5
-		_Metallic ("Metallic", Range(0,1)) = 0.0
-		_Stencil("Stencil", int) = 10
-	}
-	SubShader {
-		Tags { "RenderType"="Opaque" }
-		LOD 200
-		Stencil{
-			ref [_Stencil]
-			comp equal
-			pass replace
-		}
-		CGPROGRAM
-		// Physically based Standard lighting model, and enable shadows on all light types
-		#pragma surface surf Standard fullforwardshadows alpha:auto
+﻿Shader "Unlit/Water"
+{
+    Properties
+    {
+        _NoiseTex("Noise Tex", 2D) = "white" {}
+        _NoiseScale("Noise Scale",Range(0,3)) = 1
+        _BaseColor("BaseColor",Color) = (1,1,1,1)
+        _FoamTexture("Foam Tex", 2D) = "white" {}
+        _FoamColor("FormColor",Color) = (1,1,1,1)
+        _FoamDistance("Foam Distance", Float) = 1
+        _FoamTexScale("Foam Tex Scale", Range(0.1, 10)) = 1
+        _FoamFadeStrength("Foam Fade Strength", Range(1, 40)) = 20
+        _Stencil("Stencil", int) = 10
+    }
+    SubShader
+    {
+        Tags { "RenderType"="Transparent" }
+        LOD 100
 
-		// Use shader model 3.0 target, to get nicer looking lighting
-		#pragma target 3.0
+        Pass
+        {
+            Tags {"LightMode" = "ForwardBase" "Queue" = "Transparent"}
+            Stencil{
+                ref [_Stencil]
+                comp equal
+                pass replace
+            }
+            ZWrite Off
+            Blend SrcAlpha OneMinusSrcAlpha
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
 
-		sampler2D _MainTex;
+            #include "UnityCG.cginc"
 
-		struct Input {
-			float2 uv_MainTex;
-			float4 screenPos;
-			float3 worldPos;
-			float3 viewDir;
-		};
+            struct appdata
+            {
+                float4 vertex : POSITION;
+                float2 uv : TEXCOORD0;
+                float3 normal : NORMAL;
+            };
 
-		half _Glossiness;
-		half _Metallic;
-		fixed4 _Color;
-		sampler2D _CameraDepthTexture;
+            struct v2f
+            {
+                float2 uv : TEXCOORD0;
+                float3 worldPos : TEXCOORD1;
+                float3 worldNormal : TEXCOORD2;
+                float3 objPos : TEXCOORD3;
+                float4 vertex : SV_POSITION;
+            };
 
-		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
-		// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
-		// #pragma instancing_options assumeuniformscaling
-		UNITY_INSTANCING_BUFFER_START(Props)
-			// put more per-instance properties here
-		UNITY_INSTANCING_BUFFER_END(Props)
+            sampler2D _NoiseTex;
+            sampler2D _FoamTexture;
+            float4 _NoiseTex_ST;
+            fixed4 _BaseColor;
+            fixed4 _FoamColor;
+            half _FoamDistance;
+            half _NoiseScale;
+            half _FoamTexScale;
+            half _FoamFadeStrength;
+            float4 _objPos;
 
-		void surf (Input IN, inout SurfaceOutputStandard o) {
-			// Albedo comes from a texture tinted by color
-			fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
-			float2 screenPos = IN.screenPos.xy / IN.screenPos.w;
-			fixed depth = Linear01Depth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screenPos));
-			fixed myDepth = length(IN.worldPos - _WorldSpaceCameraPos) * _ProjectionParams.w;
-			fixed diff = pow(1 - abs(depth - myDepth), 3000);
-			o.Albedo = diff.rrr ;
-			// Metallic and smoothness come from slider variables
-			o.Metallic = _Metallic;
-			o.Smoothness = _Glossiness;
-			o.Alpha = 1;
-		}
-		ENDCG
-	}
-	FallBack "Diffuse"
+            v2f vert (appdata v)
+            {
+                v2f o;
+                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.uv = TRANSFORM_TEX(v.uv, _NoiseTex);
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex);
+                o.worldNormal = UnityObjectToWorldNormal(v.normal);
+                o.objPos = unity_ObjectToWorld._m00_m01_m02;
+                return o;
+            }
+
+            fixed4 frag (v2f i) : SV_Target
+            {
+                fixed3 N = normalize(i.worldNormal);
+                float dis = length(_objPos - i.worldPos);
+                fixed noise = tex2D(_NoiseTex, i.uv + _Time.x / 10).r;
+                fixed4 foam = tex2D(_FoamTexture, i.worldPos.xz * _FoamTexScale);
+                half factor = (dis + (noise - 0.5) * _NoiseScale) / _FoamDistance;
+                fixed4 col = lerp(_BaseColor, _FoamColor * foam, saturate((factor - 0.5) * _FoamFadeStrength - 0.5));
+                return col;
+            }
+            ENDCG
+        }
+    }
 }

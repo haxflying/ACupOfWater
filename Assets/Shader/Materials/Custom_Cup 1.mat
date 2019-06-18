@@ -4,8 +4,9 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: Custom_Cup 1
   m_Shader: {fileID: 4800000, guid: f10036ce7d4340645b4a405809482ed2, type: 3}
   m_ShaderKeywords: 
@@ -23,8 +24,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _Glossiness: 0.691
+    - _Glossiness: 0.828
     - _Metallic: 0
     - _Stencil: 0
     m_Colors:
-    - _Color: {r: 0.8018868, g: 0, b: 0, a: 1}
+    - _Color: {r: 0.8018868, g: 0.64377475, b: 0, a: 1}

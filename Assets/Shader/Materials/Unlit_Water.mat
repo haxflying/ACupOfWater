@@ -19,13 +19,27 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _FoamTexture:
+        m_Texture: {fileID: 2800000, guid: 6c4188b7959c19d48a2c945218fb1a0e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _NoiseTex:
+        m_Texture: {fileID: 2800000, guid: 973e53e373e69234f9311ee8f55ea646, type: 3}
+        m_Scale: {x: 3, y: 3}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
+    - _FoamDistance: 0.27
+    - _FoamFadeStrength: 4.1
+    - _FoamTexScale: 0.85
     - _Glossiness: 1
     - _Metallic: 0
+    - _NoiseScale: 0.35
     - _Stencil: 10
     m_Colors:
+    - _BaseColor: {r: 0.2735849, g: 0.05126482, b: 0.001290498, a: 0.7411765}
     - _Color: {r: 1, g: 1, b: 1, a: 0.3372549}
+    - _FoamColor: {r: 1, g: 1, b: 1, a: 0.65882355}
